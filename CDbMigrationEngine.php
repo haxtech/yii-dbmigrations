@@ -11,7 +11,7 @@
 /**
  *  Import the adapters we are going to use for the migrations.
  */
-Yii::import('application.extensions.yii-dbmigrations.adapters.*');
+Yii::import('application.extensions.' . basename(dirname(__FILE__)) . '.adapters.*');
 
 /**
  *  A database migration engine exception

@@ -11,8 +11,8 @@
 /**
  *  Import the different extension components.
  */
-Yii::import('application.extensions.yii-dbmigrations.*');
-Yii::import('application.extensions.yii-dbmigrations.adapters.*');
+Yii::import('application.extensions.' . basename(dirname(__FILE__)) . '.*');
+Yii::import('application.extensions.' . basename(dirname(__FILE__)) . '.adapters.*');
 
 /**
  *  This class creates the migrate console command so that you can use it with
