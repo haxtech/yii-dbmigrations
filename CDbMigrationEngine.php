@@ -326,7 +326,7 @@ class CDbMigrationEngine {
             file_put_contents(
                 $this->migrationsDir . '/' . $name . '.php', $data
             );
-            echo('Created migration: ' . $dir . $name . '.php' . PHP_EOL);
+            echo('Created migration: ' . $this->migrationsDir . '/' . $name . '.php' . PHP_EOL);
             
         } elseif ($version == 'down') {
             
