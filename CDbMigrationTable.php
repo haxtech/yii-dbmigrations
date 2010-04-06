@@ -63,8 +63,15 @@ class CDbMigrationTable {
      *  @param $name    The name of the primary key column.
      *  @param $options The extra options to pass to the column.
      */
-    public function string($name, $options=null) {
-        $this->addField($name, 'string', $options);
+    public function string($name, $size=null, $options=null) {
+        if (!is_int($size)) {
+            if ($options === null) {
+                $options = $size;
+            }
+            $size = 255;
+        }
+        $this->addField($name, "varchar($size)", $options);
+        return $this;
     }
     
     /**
