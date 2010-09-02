@@ -27,7 +27,7 @@ class CDbMigrationAdapterMysql extends CDbMigrationAdapter {
         'float' => 'float',
         'decimal' => 'decimal',
         'datetime' => 'datetime',
-        'timestamp' => 'datetime',
+        'timestamp' => 'timestamp',
         'time' => 'time',
         'date' => 'date',
         'binary' => 'blob',
