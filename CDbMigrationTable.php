@@ -85,6 +85,16 @@ class CDbMigrationTable {
     }
     
     /**
+     *  Add a big integer field to the table.
+     *
+     *  @param $name    The name of the primary key column.
+     *  @param $options The extra options to pass to the column.
+     */
+    public function bigint($name, $options=null) {
+        $this->addField($name, 'bigint', $options);
+    }
+    
+    /**
      *  Add an integer field to the table.
      *
      *  @param $name    The name of the primary key column.

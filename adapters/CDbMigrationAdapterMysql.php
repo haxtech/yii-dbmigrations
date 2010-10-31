@@ -24,6 +24,7 @@ class CDbMigrationAdapterMysql extends CDbMigrationAdapter {
         'string' => 'varchar(255)',
         'text' => 'text',
         'integer' => 'int(4)',
+        'bigint' => 'bigint(20)',
         'float' => 'float',
         'decimal' => 'decimal',
         'datetime' => 'datetime',
