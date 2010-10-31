@@ -269,7 +269,7 @@ abstract class CDbMigrationAdapter {
      * @param string $table
      * @param string $name
      * @return void
-     * @author Florian Fackler
+     * @author Florian Fackler <florian.fackler@mintao.com>
      */
     public function removeConstraint($table, $name)
     {
