@@ -176,7 +176,7 @@ abstract class CDbMigration {
      * @return void
      * @author Florian Fackler <florian.fackler@mintao.com>
      */
-    protected function addConstraint($srcTable, $srcColumn, $targetTable, $targetColumn, $name=null, array $options = array())
+    protected function addConstraint($srcTable, $srcColumn, $targetTable, $targetColumn, $name = null, $options = null)
     {
         echo('    >> Adding constraint to table: ' . $srcTable . PHP_EOL);
         return $this->adapter->addConstraint($srcTable, $srcColumn, $targetTable, $targetColumn, $name, $options);

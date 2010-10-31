@@ -243,7 +243,7 @@ abstract class CDbMigrationAdapter {
         $targetTable, 
         $targetColumn, 
         $name=null, 
-        array $options = array()
+        $options = null
     ) {
         if (is_null($name)) {
             $name = strtolower("{$srcTable}_{$srcColumn}_{$targetTable}_{$targetColumn}");
@@ -252,12 +252,14 @@ abstract class CDbMigrationAdapter {
             'ALTER TABLE %s'
             . ' ADD CONSTRAINT %s'
             . ' FOREIGN KEY (%s)'
-            . ' REFERENCES %s (%s)',
+            . ' REFERENCES %s (%s)'
+            . ' %s',
             $this->db->quoteTableName($srcTable),
             $this->db->quoteColumnName($name),
             $this->db->quoteColumnName($srcColumn),
             $this->db->quoteTableName($targetTable),
-            $this->db->quoteColumnName($targetColumn));
+            $this->db->quoteColumnName($targetColumn),
+            $options);
         return $this->execute($sql);
     }
 
