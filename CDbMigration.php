@@ -165,6 +165,30 @@ abstract class CDbMigration {
     }
     
     /**
+     * Adds a constraint to a given Table
+     *
+     * @param string $srcTable     Source table
+     * @param string $srcColumn    Source column in source table
+     * @param string $targetTable  Target table
+     * @param string $targetColumn Target column in target table
+     * @param string $name         Name of the constraing
+     * @param array  $options      Additional options eg. "ON UPDATE CASCADE"
+     * @return void
+     * @author Florian Fackler <florian.fackler@mintao.com>
+     */
+    protected function addConstraint($srcTable, $srcColumn, $targetTable, $targetColumn, $name=null, array $options = array())
+    {
+        echo('    >> Adding constraint to table: ' . $srcTable . PHP_EOL);
+        return $this->adapter->addConstraint($srcTable, $srcColumn, $targetTable, $targetColumn, $name, $options);
+    }
+    
+    protected function removeConstraint($table, $name)
+    {
+        echo('    >> Removing constraint ' . $name . ' from table: ' . $table . PHP_EOL);
+        return $this->adapter->removeConstraint($table, $name);
+    }
+    
+    /**
      *  Create a new table
      *
      *  @param $name    The name of the table to create.

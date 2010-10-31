@@ -12,19 +12,19 @@
  *  @package extensions.yii-dbmigrations
  */
 abstract class CDbMigrationAdapter {
-    
+
     /**
      *  The database connection
      */
     public $db;
-    
+
     /**
      *  Class Constructor
      */
     public function __construct(CDbConnection $db) {
         $this->db = $db;
     }
-    
+
     /**
      *  Convert a type to a native database type
      */
@@ -35,11 +35,11 @@ abstract class CDbMigrationAdapter {
             return $theType;
         }
     }
-    
+
     /**
      *  Convert the field information to native types
      */
-    protected function convertFields($fields) {
+    protected function convertFields(array $fields) {
         $result = array();
         foreach ($fields as $field) {
             if (is_array($field)) {
@@ -56,7 +56,7 @@ abstract class CDbMigrationAdapter {
         }
         return join(', ', $result);
     }
-    
+
     /**
      *  With the execute function, you can execute a raw SQL query against the
      *  database. The SQL query should be one that doesn't return any data.
@@ -66,14 +66,14 @@ abstract class CDbMigrationAdapter {
      *
      *  @returns The number of affected rows.
      */
-    public function execute($query, $params=array()) {
+    public function execute($query, array $params=array()) {
         $cmd = $this->db->createCommand($query);
         foreach ($params as $key => $param) {
             $cmd->bindValue($key, $param);
         }
         return $cmd->execute();
     }
-    
+
     /**
      *  With the execute function, you can execute a raw SQL query against the
      *  database. The SQL query should be one that returns data.
@@ -90,7 +90,7 @@ abstract class CDbMigrationAdapter {
         }
         return $cmd->queryAll();
     }
-    
+
     /**
      *  Retrieve the type information from a database column.
      *
@@ -98,7 +98,7 @@ abstract class CDbMigrationAdapter {
      */
     public function columnInfo($table, $name) {
     }
-    
+
     /**
      *  The createTable function allows you to create a new table in the
      *  database.
@@ -108,12 +108,12 @@ abstract class CDbMigrationAdapter {
      *  @param $options The extra options to pass to the database creation.
      */
     public function createTable($name, $columns=array(), $options=null) {
-        $sql = 'CREATE TABLE ' . $this->db->quoteTableName($name) . ' ('
+        $sql = 'CREATE TABLE IF NOT EXISTS' . $this->db->quoteTableName($name) . ' ('
              . $this->convertFields($columns)
              . ') ' . $options;
         return $this->execute($sql);
     }
-    
+
     /**
      *  Rename a table.
      *
@@ -125,7 +125,7 @@ abstract class CDbMigrationAdapter {
              . $this->db->quoteTableName($new_name);
         return $this->execute($sql);
     }
-    
+
     /**
      *  Remove a table from the database.
      *
@@ -135,7 +135,19 @@ abstract class CDbMigrationAdapter {
         $sql = 'DROP TABLE ' . $this->db->quoteTableName($name);
         return $this->execute($sql);
     }
-    
+
+    /**
+     * Simple alias to drop a table
+     *
+     * @param string $name Table name to drop
+     * @return void
+     * @author Florian Fackler <florian.fackler@mintao.com>
+     */
+    public function dropTable($name)
+    {
+        return $this->removeTable($name);
+    }
+
     /**
      *  Add a database column to an existing table.
      *
@@ -151,7 +163,7 @@ abstract class CDbMigrationAdapter {
              . $options;
         return $this->execute($sql);
     }
-    
+
     /**
      *  Rename a database column in an existing table.
      *
@@ -166,7 +178,7 @@ abstract class CDbMigrationAdapter {
              . $this->db->quoteColumnName($new_name) . ' ' . $type;
         return $this->execute($sql);
     }
-    
+
     /**
      *  Change a database column in an existing table.
      *
@@ -183,7 +195,7 @@ abstract class CDbMigrationAdapter {
              . $options;
         return $this->execute($sql);
     }
-    
+
     /**
      *  Remove a table column from the database.
      *
@@ -195,7 +207,7 @@ abstract class CDbMigrationAdapter {
              . $this->db->quoteColumnName($column);
         return $this->execute($sql);
     }
-    
+
     /**
      *  Add an index to the database or a specific table.
      *
@@ -213,7 +225,60 @@ abstract class CDbMigrationAdapter {
              . ')';
         return $this->execute($sql);
     }
-    
+
+    /**
+     * Adds a constraint to a given Table
+     *
+     * @param string $srcTable     Source table
+     * @param string $srcColumn    Source column in source table
+     * @param string $targetTable  Target table
+     * @param string $targetColumn Target column in target table
+     * @param string $name         Name of the constraing
+     * @return void
+     * @author Florian Fackler <florian.fackler@mintao.com>
+     */
+    public function addConstraint(
+        $srcTable, 
+        $srcColumn, 
+        $targetTable, 
+        $targetColumn, 
+        $name=null, 
+        array $options = array()
+    ) {
+        if (is_null($name)) {
+            $name = strtolower("{$srcTable}_{$srcColumn}_{$targetTable}_{$targetColumn}");
+        }
+        $sql = sprintf(
+            'ALTER TABLE %s'
+            . ' ADD CONSTRAINT %s'
+            . ' FOREIGN KEY (%s)'
+            . ' REFERENCES %s (%s)',
+            $this->db->quoteTableName($srcTable),
+            $this->db->quoteColumnName($name),
+            $this->db->quoteColumnName($srcColumn),
+            $this->db->quoteTableName($targetTable),
+            $this->db->quoteColumnName($targetColumn));
+        return $this->execute($sql);
+    }
+
+    /**
+     * Removes a constraint
+     *
+     * @param string $table
+     * @param string $name
+     * @return void
+     * @author Florian Fackler
+     */
+    public function removeConstraint($table, $name)
+    {
+        $this->execute('SET FOREIGN_KEY_CHECKS = 0');
+        $this->execute(
+            sprintf('ALTER TABLE %s DROP FOREIGN KEY %s',
+            $this->db->quoteTableName($table),
+            $this->db->quoteColumnName($name)));
+        return $this->execute('SET FOREIGN_KEY_CHECKS = 1');
+    }
+
     /**
      *  Remove a table index from the database.
      *
@@ -225,5 +290,5 @@ abstract class CDbMigrationAdapter {
              . $this->db->quoteTableName($table);
         return $this->execute($sql);
     }
-    
+
 }
