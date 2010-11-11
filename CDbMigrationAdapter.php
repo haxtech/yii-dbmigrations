@@ -108,20 +108,20 @@ abstract class CDbMigrationAdapter {
      *  @param $options The extra options to pass to the database creation.
      */
     public function createTable($name, $columns=array(), $options=null) {
-    	if(strtolower($options['engine']))
-    		$engine = $options['engine'];
-    	else
-    		$engine = 'InnoDB';
-    		
-    	$charset = 'utf8';
     	
-    	if($collate)
-	    	$collate = 'utf8_general_ci';
+    	$engine = $options['engine'] ? $options['engine'] : 'InnoDB';
+    	$charset = $options['charset'] ? $options['charset'] : 'utf8';
+    	$collate = $options['collate'] ? $options['collate'] : 'utf8_general_ci';
     	
-    	
+  		unset($options['engine'], $options['charset'], $options['collate']);
+  		  	
         $sql = 'CREATE TABLE IF NOT EXISTS' . $this->db->quoteTableName($name) . ' ('
              . $this->convertFields($columns)
-             . ') ' . $options;
+             . ') '
+             . "ENGINE=$engine "
+             . "DEFAULT CHARACTER SET=$charset "
+             . "COLLATE=$collate "
+             . $options;
         return $this->execute($sql);
     }
 
