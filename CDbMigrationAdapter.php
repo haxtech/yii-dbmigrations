@@ -107,11 +107,11 @@ abstract class CDbMigrationAdapter {
      *  @param $column  The column definition for the database table
      *  @param $options The extra options to pass to the database creation.
      */
-    public function createTable($name, $columns=array(), $options=null) {
+    public function createTable($name, $columns=array(), $options=array(), $extra=null) {
     	
-    	$engine = $options['engine'] ? $options['engine'] : 'InnoDB';
-    	$charset = $options['charset'] ? $options['charset'] : 'utf8';
-    	$collate = $options['collate'] ? $options['collate'] : 'utf8_general_ci';
+    	@$engine = $options['engine'] ? $options['engine'] : 'InnoDB';
+    	@$charset = $options['charset'] ? $options['charset'] : 'utf8';
+    	@$collate = $options['collate'] ? $options['collate'] : 'utf8_general_ci';
     	
   		unset($options['engine'], $options['charset'], $options['collate']);
   		  	
@@ -121,7 +121,7 @@ abstract class CDbMigrationAdapter {
              . "ENGINE=$engine "
              . "DEFAULT CHARACTER SET=$charset "
              . "COLLATE=$collate "
-             . $options;
+             . $extra;
         return $this->execute($sql);
     }
 
